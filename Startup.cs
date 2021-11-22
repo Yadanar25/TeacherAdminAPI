@@ -31,7 +31,7 @@ namespace TeacherAdminAPI
             });
             services.AddControllers();
             services.AddDbContext<ApplicationDBContext>(x => x.UseMySql(Configuration.GetConnectionString("ConnectionStr")));
-            services.AddScoped<ITeacherStudentService, TeacherStudentService>();
+            services.AddScoped<ITeacherAdminService, TeacherAdminService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

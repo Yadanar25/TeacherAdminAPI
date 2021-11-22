@@ -9,13 +9,16 @@ using TeacherAdminAPI.Services.Interfaces;
 
 namespace TeacherAdminAPI.Controllers
 {
+    /// <summary>
+    /// TeacherAdminApi
+    /// </summary>
     [ApiController]
     [Route("api")]
-    public class TeacherStudentController : ControllerBase
+    public class TeacherAdminController : ControllerBase
     {
-        private ITeacherStudentService _teacherStudentService;
+        private ITeacherAdminService _teacherStudentService;
 
-        public TeacherStudentController(ITeacherStudentService teacherStudentService)
+        public TeacherAdminController(ITeacherAdminService teacherStudentService)
         {
             _teacherStudentService = teacherStudentService;
         }
@@ -23,7 +26,7 @@ namespace TeacherAdminAPI.Controllers
         /// <summary>
         /// Register Student
         /// </summary>
-        /// <param name="model">The model.</param>
+        /// <param name="model">The model</param>
         /// <returns></returns>
         [HttpPost]
         [Route("register")]
@@ -37,6 +40,10 @@ namespace TeacherAdminAPI.Controllers
             return BadRequest(new { message = result.Message });
         }
 
+        /// <summary>
+        /// Retrieve Common Students List who register under all teachers from input parameter
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("commonstudents")]
         public async Task<IActionResult> GetCommonStudentsList()
@@ -57,6 +64,11 @@ namespace TeacherAdminAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Suspend Student
+        /// </summary>
+        /// <param name="model">The model</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("suspend")]
         public async Task<IActionResult> SuspendStudent(SuspendStudentBindingModel model)
@@ -76,6 +88,11 @@ namespace TeacherAdminAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Retrieve a list of students who can receive a given notification
+        /// </summary>
+        /// <param name="model">The model</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("retrievefornotifications")]
         public async Task<IActionResult> RetrieveListofStudentForNotification(NotificationStudentListBindingModel model)

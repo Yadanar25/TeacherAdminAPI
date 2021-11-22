@@ -12,10 +12,10 @@ using TeacherAdminAPI.Services.Interfaces;
 
 namespace TeacherAdminAPI.Services
 {
-    public class TeacherStudentService : ITeacherStudentService
+    public class TeacherAdminService : ITeacherAdminService
     {
         private ApplicationDBContext _dbContext;
-        public TeacherStudentService(ApplicationDBContext dbContext)
+        public TeacherAdminService(ApplicationDBContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -23,7 +23,7 @@ namespace TeacherAdminAPI.Services
         public async Task<ServiceResult<bool>> RegisterStudents(RegisterStudentBindingModel model)
         {
             var retrieveTeacherId = _dbContext.Teachers.Where(x => x.Email == model.Teacher).Select(x => x.Id).FirstOrDefault();
-            if(retrieveTeacherId == null || retrieveTeacherId == 0)
+            if(retrieveTeacherId == 0)
             {
                 return new ServiceResult<bool>("The teacher email is not found!!!");
             }
@@ -47,7 +47,6 @@ namespace TeacherAdminAPI.Services
 
         public async Task<ServiceResult<StudentsListViewModel>> GetCommonStudentsList(string[] teacher)
         {
-            //can check if all teacher emails is in db or not
             var checkTeachers = _dbContext.Teachers.Where(x => teacher.Contains(x.Email)).Count() == teacher.Count();
             if (!checkTeachers)
             {
@@ -91,14 +90,16 @@ namespace TeacherAdminAPI.Services
                 return new ServiceResult<NotiRecipientListViewModel>("The teacher is not in the list");
             }
             var getStudentEmailFromModel = ExtractEmails(model.Notification);
-            var getStudentEmails = _dbContext.Registrations.Where(x => (x.TeacherId == getTeacherId || 
-                                    getStudentEmailFromModel.Contains(x.Student.Email.ToLower())) 
+            var getStudentEmails = _dbContext.Registrations.Where(x => x.TeacherId == getTeacherId
                                     && x.Student.Status != StudentStatus.Suspended).Select(x => x.Student.Email)
-                                    .Distinct().ToArray();
-
+                                    .Distinct().ToList();
+            var checkEmailFromModel = _dbContext.Students.Where(x => getStudentEmailFromModel.Contains(x.Email)
+                                        && x.Status != StudentStatus.Suspended).Select(x => x.Email).Distinct().ToList();
+            getStudentEmails.AddRange(checkEmailFromModel);
+            var getAllRecipient = getStudentEmails.Distinct();
             NotiRecipientListViewModel studentList = new NotiRecipientListViewModel()
             {
-                Recipients = getStudentEmails
+                Recipients = getAllRecipient.ToArray()
             };
             return new ServiceResult<NotiRecipientListViewModel>(studentList);
         }

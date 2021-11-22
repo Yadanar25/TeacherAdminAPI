@@ -8,7 +8,7 @@ using TeacherAdminAPI.Models.ViewModels;
 
 namespace TeacherAdminAPI.Services.Interfaces
 {
-    public interface ITeacherStudentService
+    public interface ITeacherAdminService
     {
         Task<ServiceResult<bool>> RegisterStudents(RegisterStudentBindingModel model);
 
